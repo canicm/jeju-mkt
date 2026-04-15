@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -19,15 +20,36 @@
         .header-title { color:#111; font-size:16px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
         .header-subtitle { color:#999; font-size:10px; margin-top:1px; white-space:nowrap; }
 
-        /* 햄버거 */
         .hamburger { display:none; flex-direction:column; justify-content:center; gap:5px; width:36px; height:36px; background:none; border:none; cursor:pointer; padding:4px; flex-shrink:0; }
         .hamburger span { display:block; width:22px; height:2px; background:#333; border-radius:2px; transition:all 0.3s; }
         .hamburger.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
         .hamburger.open span:nth-child(2) { opacity:0; }
         .hamburger.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
 
-        .header-right { display:flex; align-items:center; gap:6px; flex-shrink:0; }
-        .header-chip { background:#f5f5f5; color:#444; padding:4px 10px; border-radius:16px; font-size:11px; border:1px solid #e8e8e8; white-space:nowrap; }
+        .header-right { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+
+        /* ── 모드 뱃지 ── */
+        .mode-badge {
+            display:flex; align-items:center; gap:5px;
+            padding:5px 12px; border-radius:20px;
+            font-size:12px; font-weight:700; cursor:pointer;
+            border:1.5px solid; transition:all 0.2s;
+            white-space:nowrap; touch-action:manipulation;
+        }
+        .mode-badge.user {
+            background:#f0f9ff; color:#0369a1;
+            border-color:#bae6fd;
+        }
+        .mode-badge.user:hover { background:#e0f2fe; }
+        .mode-badge.admin {
+            background:#fff7ed; color:#c2410c;
+            border-color:#fed7aa;
+        }
+        .mode-badge.admin:hover { background:#ffedd5; }
+        .mode-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+        .mode-badge.user  .mode-dot { background:#0ea5e9; }
+        .mode-badge.admin .mode-dot { background:#f97316; animation:pulse-dot 2s infinite; }
+        @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
         /* ── 레이아웃 ── */
         .layout { display:flex; margin-top:56px; min-height:calc(100vh - 56px); }
@@ -35,44 +57,26 @@
         .sidebar-overlay.show { display:block; }
 
         /* ── 사이드바 ── */
-        .sidebar {
-            width:240px; flex-shrink:0; background:#fafafa;
-            border-right:1px solid #e5e5e5;
-            height:calc(100vh - 56px); overflow-y:auto;
-            position:sticky; top:56px; align-self:flex-start;
-            transition:transform 0.3s ease;
-        }
+        .sidebar { width:240px; flex-shrink:0; background:#fafafa; border-right:1px solid #e5e5e5; height:calc(100vh - 56px); overflow-y:auto; position:sticky; top:56px; align-self:flex-start; transition:transform 0.3s ease; }
         .sidebar-header { padding:16px 14px 10px; border-bottom:1px solid #ececec; margin-bottom:6px; }
         .sidebar-header h3 { color:#555; font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; }
-        .add-menu-btn { display:flex; align-items:center; justify-content:center; gap:6px; margin:8px 10px; padding:10px 14px; background:#E51C23; color:white; border:none; border-radius:8px; cursor:pointer; font-size:13px; font-weight:700; width:calc(100% - 20px); transition:background 0.2s; }
+        .add-menu-btn { display:flex; align-items:center; justify-content:center; gap:6px; margin:8px 10px; padding:10px 14px; background:#E51C23; color:white; border:none; border-radius:8px; cursor:pointer; font-size:13px; font-weight:700; width:calc(100% - 20px); transition:background 0.2s; touch-action:manipulation; }
         .add-menu-btn:active { background:#c0392b; }
 
         .menu-tree { padding:4px 0 20px; }
         .menu-item { position:relative; }
-
-        /* ★ 핵심 수정: 메뉴 헤더 — pointer-events 명시, touch-action 설정 */
-        .menu-item-header {
-            display:flex; align-items:center; padding:10px 12px;
-            cursor:pointer; border-left:3px solid transparent;
-            gap:7px; transition:background 0.15s; user-select:none;
-            touch-action:manipulation;          /* ★ 모바일 터치 딜레이 제거 */
-            -webkit-user-select:none;
-            position:relative; z-index:1;       /* ★ 터치 영역 보장 */
-        }
+        .menu-item-header { display:flex; align-items:center; padding:10px 12px; cursor:pointer; border-left:3px solid transparent; gap:7px; transition:background 0.15s; user-select:none; touch-action:manipulation; -webkit-user-select:none; position:relative; z-index:1; }
         .menu-item-header:active { background:#f0f0f0; }
         .menu-item-header.active { background:#fff0f0; border-left-color:#E51C23; }
         .menu-item-header.active .menu-label { color:#E51C23; font-weight:700; }
-
-        .menu-toggle { width:16px; height:16px; display:flex; align-items:center; justify-content:center; font-size:9px; color:#aaa; transition:transform 0.25s; flex-shrink:0; pointer-events:none; /* ★ 토글 아이콘이 클릭 가로채지 않도록 */ }
+        .menu-toggle { width:16px; height:16px; display:flex; align-items:center; justify-content:center; font-size:9px; color:#aaa; transition:transform 0.25s; flex-shrink:0; pointer-events:none; }
         .menu-toggle.open { transform:rotate(90deg); }
         .menu-toggle.invisible { visibility:hidden; }
-
         .menu-icon { font-size:15px; flex-shrink:0; pointer-events:none; }
         .menu-label { flex:1; font-size:13px; font-weight:500; color:#222; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; pointer-events:none; }
         .menu-type-badge { font-size:9px; padding:2px 5px; border-radius:4px; font-weight:700; flex-shrink:0; pointer-events:none; }
         .badge-board { background:#e8f0fe; color:#1a56db; }
         .badge-link  { background:#f3e8ff; color:#7c3aed; }
-
         .menu-actions { display:none; gap:3px; flex-shrink:0; }
         .menu-item-header:hover .menu-actions { display:flex; }
         .menu-action-btn { width:22px; height:22px; border:none; border-radius:4px; cursor:pointer; font-size:11px; display:flex; align-items:center; justify-content:center; transition:all 0.15s; touch-action:manipulation; }
@@ -83,22 +87,12 @@
         .btn-delete { background:#fce4ec; color:#c62828; }
         .btn-delete:hover { background:#c62828; color:white; }
 
-        /* ★ 핵심 수정: submenu — 깊이에 관계없이 동일하게 동작 */
-        .submenu {
-            display:none;
-            overflow:hidden;                    /* ★ 높이 애니메이션용 */
-        }
+        .submenu { display:none; overflow:hidden; }
         .submenu.open { display:block; }
-
-        /* depth별 들여쓰기 */
         .submenu .menu-item-header { padding-left:20px; }
         .submenu .submenu .menu-item-header { padding-left:32px; }
         .submenu .submenu .submenu .menu-item-header { padding-left:44px; }
-
         .submenu .menu-label { font-size:12px; }
-        .submenu .submenu .menu-label { font-size:12px; }
-
-        /* depth 구분선 */
         .submenu { border-left:2px solid #f0f0f0; margin-left:14px; }
         .submenu .submenu { border-left:2px solid #e8e8e8; margin-left:12px; }
 
@@ -128,7 +122,7 @@
         /* ── 게시판 ── */
         .board-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
         .board-top h2 { font-size:18px; font-weight:700; color:#111; display:flex; align-items:center; gap:8px; }
-        .board-write-btn { padding:9px 18px; background:#E51C23; color:white; border:none; border-radius:8px; cursor:pointer; font-size:13px; font-weight:700; touch-action:manipulation; }
+        .board-write-btn { padding:9px 18px; background:#E51C23; color:white; border:none; border-radius:8px; cursor:pointer; font-size:13px; font-weight:700; touch-action:manipulation; transition:background 0.2s; }
         .board-write-btn:active { background:#c0392b; }
         .board-search { display:flex; gap:7px; margin-bottom:14px; background:#fafafa; border:1px solid #e8e8e8; border-radius:10px; padding:10px 12px; flex-wrap:wrap; }
         .board-search select, .board-search input { padding:8px 10px; border:1px solid #e0e0e0; border-radius:7px; font-size:13px; outline:none; background:#fff; }
@@ -189,7 +183,8 @@
         .modal-close:hover { background:#e8e8e8; }
         .form-group { margin-bottom:16px; }
         .form-group label { display:block; font-size:12px; font-weight:700; color:#555; margin-bottom:7px; }
-        .form-group input[type="text"], .form-group input[type="url"], .form-group select { width:100%; padding:12px 13px; border:1px solid #ddd; border-radius:10px; font-size:15px; outline:none; background:#fff; color:#111; -webkit-appearance:none; transition:border-color 0.2s; }
+        .form-group input[type="text"], .form-group input[type="url"],
+        .form-group input[type="password"], .form-group select { width:100%; padding:12px 13px; border:1px solid #ddd; border-radius:10px; font-size:15px; outline:none; background:#fff; color:#111; -webkit-appearance:none; transition:border-color 0.2s; }
         .form-group input:focus, .form-group select:focus { border-color:#E51C23; }
         .type-toggle { display:flex; gap:10px; }
         .type-btn { flex:1; padding:14px 8px; border:1.5px solid #e0e0e0; background:white; border-radius:12px; cursor:pointer; text-align:center; transition:all 0.2s; touch-action:manipulation; }
@@ -241,6 +236,22 @@
         .post-form-group input:focus, .post-form-group textarea:focus, .post-form-group select:focus { border-color:#E51C23; }
         .post-form-group textarea { height:240px; resize:vertical; line-height:1.7; }
 
+        /* ── 로그인 모달 ── */
+        #loginModal .modal { text-align:center; max-width:360px; }
+        .login-icon { font-size:48px; margin-bottom:14px; }
+        .login-title { font-size:18px; font-weight:700; color:#111; margin-bottom:6px; }
+        .login-sub { font-size:13px; color:#888; margin-bottom:20px; }
+        .login-error { font-size:12px; color:#E51C23; margin-top:8px; min-height:18px; }
+        #loginModal .modal-footer { justify-content:center; }
+        #loginModal .btn-confirm { flex:none; padding:12px 40px; }
+
+        /* ── 로그아웃 확인 모달 ── */
+        #logoutModal .modal { text-align:center; max-width:360px; }
+        #logoutModal .modal-footer { justify-content:center; gap:12px; }
+        .btn-logout-confirm { padding:12px 30px; background:#f97316; color:white; border:none; border-radius:10px; cursor:pointer; font-size:14px; font-weight:700; flex:1; touch-action:manipulation; }
+        .btn-logout-confirm:hover { background:#ea580c; }
+        .btn-logout-cancel { padding:12px 30px; border:1px solid #ddd; background:white; border-radius:10px; cursor:pointer; font-size:14px; color:#555; flex:1; touch-action:manipulation; }
+
         /* ── 로딩 ── */
         .loading-overlay { position:fixed; inset:0; background:rgba(255,255,255,0.95); z-index:3000; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; }
         .loading-spinner { width:44px; height:44px; border:3px solid #f0f0f0; border-top-color:#E51C23; border-radius:50%; animation:spin 0.8s linear infinite; }
@@ -262,28 +273,18 @@
         /* ── 반응형 ── */
         @media(max-width:768px){
             .hamburger { display:flex; }
-            .header-right .header-chip { display:none; }
-
-            /* ★ 모바일 사이드바: fixed + transform */
-            .sidebar {
-                position:fixed; top:56px; left:0; bottom:0;
-                z-index:900; transform:translateX(-100%);
-                height:calc(100vh - 56px);
-                width:260px;                    /* ★ 모바일에서 약간 넓게 */
-            }
+            .sidebar { position:fixed; top:56px; left:0; bottom:0; z-index:900; transform:translateX(-100%); height:calc(100vh - 56px); width:260px; }
             .sidebar.open { transform:translateX(0); box-shadow:4px 0 20px rgba(0,0,0,0.15); }
-
             .layout { display:block; }
             .main-content { width:100%; }
             .hero-title { font-size:26px; }
             .hero-content { padding:28px 20px; }
             .board-table .hide-mobile { display:none; }
             .icon-grid { grid-template-columns:repeat(7,1fr); }
-
-            /* ★ 모바일 메뉴 터치 영역 확대 */
             .menu-item-header { padding:12px 14px; min-height:44px; }
             .submenu .menu-item-header { padding:10px 14px 10px 20px; min-height:40px; }
             .submenu .submenu .menu-item-header { padding:10px 14px 10px 32px; min-height:40px; }
+            .mode-badge span:last-child { display:none; } /* 모바일: 텍스트 축약 */
         }
         @media(max-width:400px){
             .icon-grid { grid-template-columns:repeat(6,1fr); }
@@ -313,7 +314,12 @@
         <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
             <span></span><span></span><span></span>
         </button>
-        <span class="header-chip">👤 관리자</span>
+        <!-- 모드 뱃지 -->
+        <div class="mode-badge user" id="modeBadge" onclick="handleModeClick()">
+            <div class="mode-dot"></div>
+            <span id="modeIcon">👤</span>
+            <span id="modeText">사용자</span>
+        </div>
     </div>
 </header>
 
@@ -322,7 +328,8 @@
 <div class="layout">
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header"><h3>메뉴</h3></div>
-        <button class="add-menu-btn" onclick="openAddMenuModal(null)">＋ 새 메뉴 추가</button>
+        <!-- 관리자만 표시 -->
+        <button class="add-menu-btn" id="addMenuBtn" onclick="openAddMenuModal(null)" style="display:none">＋ 새 메뉴 추가</button>
         <div class="menu-tree" id="menuTree"></div>
     </aside>
 
@@ -345,7 +352,40 @@
     <span id="storageLabel">저장됨</span>
 </div>
 
-<!-- 메뉴 모달 -->
+<!-- ══ 관리자 로그인 모달 ══ -->
+<div class="modal-overlay" id="loginModal">
+    <div class="modal" style="max-width:360px">
+        <div class="modal-handle"></div>
+        <div class="login-icon">🔐</div>
+        <div class="login-title">관리자 로그인</div>
+        <div class="login-sub">관리자 비밀번호를 입력해주세요.</div>
+        <div class="form-group">
+            <input type="password" id="adminPwInput" placeholder="비밀번호 입력"
+                   onkeydown="if(event.key==='Enter')tryAdminLogin()">
+        </div>
+        <div class="login-error" id="loginError"></div>
+        <div class="modal-footer" style="justify-content:center">
+            <button class="btn-cancel" onclick="closeLoginModal()" style="flex:none;padding:12px 28px">취소</button>
+            <button class="btn-confirm" onclick="tryAdminLogin()" style="flex:none;padding:12px 40px">로그인</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══ 관리자 로그아웃 확인 모달 ══ -->
+<div class="modal-overlay" id="logoutModal">
+    <div class="modal" style="max-width:360px;text-align:center">
+        <div class="modal-handle"></div>
+        <div style="font-size:44px;margin-bottom:12px">🔓</div>
+        <div style="font-size:17px;font-weight:700;color:#111;margin-bottom:6px">관리자 모드 해제</div>
+        <div style="font-size:13px;color:#888;margin-bottom:4px">사용자 모드로 전환하시겠습니까?</div>
+        <div class="modal-footer" style="justify-content:center;gap:12px;margin-top:20px">
+            <button class="btn-logout-cancel" onclick="closeLogoutModal()">취소</button>
+            <button class="btn-logout-confirm" onclick="doLogout()">전환</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══ 메뉴 추가/편집 모달 ══ -->
 <div class="modal-overlay" id="menuModal">
     <div class="modal">
         <div class="modal-handle"></div>
@@ -377,7 +417,7 @@
     </div>
 </div>
 
-<!-- 저장 확인 팝업 -->
+<!-- ══ 저장 확인 팝업 ══ -->
 <div class="modal-overlay" id="confirmModal">
     <div class="modal">
         <div class="modal-handle"></div>
@@ -392,7 +432,7 @@
     </div>
 </div>
 
-<!-- 글쓰기 모달 -->
+<!-- ══ 글쓰기 모달 ══ -->
 <div class="modal-overlay" id="postModal">
     <div class="modal">
         <div class="modal-handle"></div>
@@ -443,6 +483,81 @@ async function dbSet(key, value) {
         body: JSON.stringify([{ key, value }])
     });
     if (!r.ok) throw new Error(`SET 실패: ${r.status}`);
+}
+
+/* ════════════════════════════════════════
+   ★ 권한 관리
+════════════════════════════════════════ */
+const ADMIN_PW   = '3069';
+let   isAdmin    = false;   // 기본: 사용자 모드
+
+function isAdminMode() { return isAdmin; }
+
+/* 모드 뱃지 UI 갱신 */
+function updateModeBadge() {
+    const badge = document.getElementById('modeBadge');
+    const icon  = document.getElementById('modeIcon');
+    const text  = document.getElementById('modeText');
+    const addBtn= document.getElementById('addMenuBtn');
+
+    if (isAdmin) {
+        badge.className = 'mode-badge admin';
+        icon.textContent  = '🔑';
+        text.textContent  = '관리자';
+        addBtn.style.display = 'flex';
+    } else {
+        badge.className = 'mode-badge user';
+        icon.textContent  = '👤';
+        text.textContent  = '사용자';
+        addBtn.style.display = 'none';
+    }
+    /* 현재 보이는 메뉴 액션 버튼 재렌더 */
+    renderMenu();
+    initMenuEvents();
+}
+
+/* 뱃지 클릭 */
+function handleModeClick() {
+    if (isAdmin) {
+        /* 관리자 → 로그아웃 확인 */
+        document.getElementById('logoutModal').classList.add('active');
+    } else {
+        /* 사용자 → 로그인 모달 */
+        document.getElementById('adminPwInput').value = '';
+        document.getElementById('loginError').textContent = '';
+        document.getElementById('loginModal').classList.add('active');
+        setTimeout(() => document.getElementById('adminPwInput').focus(), 300);
+    }
+}
+
+function tryAdminLogin() {
+    const pw = document.getElementById('adminPwInput').value;
+    if (pw === ADMIN_PW) {
+        isAdmin = true;
+        closeLoginModal();
+        updateModeBadge();
+        showToast('✅ 관리자 모드로 전환되었습니다.');
+    } else {
+        document.getElementById('loginError').textContent = '❌ 비밀번호가 올바르지 않습니다.';
+        document.getElementById('adminPwInput').value = '';
+        document.getElementById('adminPwInput').focus();
+    }
+}
+
+function closeLoginModal() {
+    document.getElementById('loginModal').classList.remove('active');
+    document.getElementById('loginError').textContent = '';
+}
+
+function doLogout() {
+    isAdmin = false;
+    closeLogoutModal();
+    updateModeBadge();
+    showToast('👤 사용자 모드로 전환되었습니다.');
+}
+
+function closeLogoutModal() {
+    document.getElementById('logoutModal').classList.remove('active');
 }
 
 /* ════════════════════════════════════════
@@ -557,18 +672,14 @@ async function loadData() {
         if(boardRow){ boardData=boardRow.value.board||{}; nextPostId=boardRow.value.nextPostId||1000; }
         else { boardData={}; await dbSet('board',{board:boardData,nextPostId}); }
         saveLocal(); return true;
-    } catch(e) {
-        console.warn('DB 로드 실패:', e); loadLocal(); return false;
-    }
+    } catch(e) { console.warn('DB 로드 실패:', e); loadLocal(); return false; }
 }
 
 /* ════════════════════════════════════════
-   ★ 사이드바 토글 (모바일)
+   사이드바 토글
 ════════════════════════════════════════ */
 function toggleSidebar() {
-    const sb=document.getElementById('sidebar');
-    const ov=document.getElementById('sidebarOverlay');
-    const hb=document.getElementById('hamburger');
+    const sb=document.getElementById('sidebar'), ov=document.getElementById('sidebarOverlay'), hb=document.getElementById('hamburger');
     const open=sb.classList.toggle('open');
     hb.classList.toggle('open',open);
     if(open){ ov.classList.add('show'); document.body.style.overflow='hidden'; }
@@ -602,11 +713,11 @@ function goHome() {
 }
 
 /* ════════════════════════════════════════
-   ★ 메뉴 렌더링 — 이벤트 위임 방식으로 변경
+   메뉴 렌더링 (권한 반영)
 ════════════════════════════════════════ */
 function renderMenu() {
     const tree=document.getElementById('menuTree');
-    if(!menuData.length){ tree.innerHTML='<div class="empty-menu">메뉴가 없습니다.<br>새 메뉴를 추가해주세요.</div>'; return; }
+    if(!menuData.length){ tree.innerHTML='<div class="empty-menu">메뉴가 없습니다.</div>'; return; }
     tree.innerHTML=menuData.map(item=>renderMenuItem(item,0)).join('');
 }
 
@@ -618,7 +729,17 @@ function renderMenuItem(item,depth) {
     const childrenHtml=hasChildren
         ?`<div class="submenu" id="sub_${item.id}">${item.children.map(c=>renderMenuItem(c,depth+1)).join('')}</div>`:'';
 
-    /* ★ onclick 대신 data 속성 사용 → 이벤트 위임으로 처리 */
+    /* ★ 관리자만 액션 버튼 표시 */
+    const actionsHtml = isAdmin ? `
+        <div class="menu-actions">
+            <button class="menu-action-btn btn-add-child"
+                    data-action="add" data-id="${item.id}" title="하위 메뉴 추가">+</button>
+            <button class="menu-action-btn btn-edit"
+                    data-action="edit" data-id="${item.id}" title="편집">✎</button>
+            <button class="menu-action-btn btn-delete"
+                    data-action="delete" data-id="${item.id}" title="삭제">✕</button>
+        </div>` : '';
+
     return `
         <div class="menu-item" id="item_${item.id}">
             <div class="menu-item-header"
@@ -629,29 +750,27 @@ function renderMenuItem(item,depth) {
                 <span class="menu-icon">${item.icon}</span>
                 <span class="menu-label">${item.name}</span>
                 ${typeBadge}
-                <div class="menu-actions">
-                    <button class="menu-action-btn btn-add-child"
-                            data-action="add" data-id="${item.id}" title="하위 메뉴 추가">+</button>
-                    <button class="menu-action-btn btn-edit"
-                            data-action="edit" data-id="${item.id}" title="편집">✎</button>
-                    <button class="menu-action-btn btn-delete"
-                            data-action="delete" data-id="${item.id}" title="삭제">✕</button>
-                </div>
+                ${actionsHtml}
             </div>
             ${childrenHtml}
         </div>`;
 }
 
-/* ★ 이벤트 위임: menuTree 에 단일 리스너 등록 */
+/* ════════════════════════════════════════
+   이벤트 위임
+════════════════════════════════════════ */
 function initMenuEvents() {
     const tree = document.getElementById('menuTree');
+    /* 기존 리스너 제거 후 재등록 */
+    const newTree = tree.cloneNode(true);
+    tree.parentNode.replaceChild(newTree, tree);
 
-    /* 클릭 & 터치 모두 처리 */
-    function handleMenuEvent(e) {
-        /* 액션 버튼 처리 */
+    newTree.addEventListener('click', function(e) {
+        /* 액션 버튼 */
         const actionBtn = e.target.closest('[data-action]');
         if (actionBtn) {
             e.stopPropagation();
+            if (!isAdmin) { showToast('⚠️ 관리자 권한이 필요합니다.'); return; }
             const action = actionBtn.dataset.action;
             const id     = parseInt(actionBtn.dataset.id);
             if (action==='add')    openAddMenuModal(id);
@@ -659,48 +778,27 @@ function initMenuEvents() {
             if (action==='delete') deleteMenu(id);
             return;
         }
-
-        /* 메뉴 헤더 처리 */
+        /* 메뉴 헤더 */
         const header = e.target.closest('.menu-item-header');
         if (!header) return;
-
         const id          = parseInt(header.dataset.id);
         const hasChildren = header.dataset.hasChildren === 'true';
 
-        /* 활성 표시 */
         document.querySelectorAll('.menu-item-header').forEach(h=>h.classList.remove('active'));
         header.classList.add('active');
 
-        /* 서브메뉴 토글 */
         if (hasChildren) {
             const sub    = document.getElementById(`sub_${id}`);
             const toggle = document.getElementById(`toggle_${id}`);
-            if (sub) {
-                sub.classList.toggle('open');
-                if (toggle) toggle.classList.toggle('open');
-            }
+            if (sub) { sub.classList.toggle('open'); if(toggle) toggle.classList.toggle('open'); }
         }
 
-        /* 컨텐츠 표시 */
         const item = findMenuById(id, menuData);
         if (!item) return;
-
-        /* 모바일: 리프 메뉴(하위 없음) 또는 링크 클릭 시 사이드바 닫기 */
         if (!hasChildren || item.type==='link') closeSidebar();
-
         if (item.type==='link') showLinkContent(item);
-        else {
-            currentBoardId=id; currentPage=1;
-            if (!boardData[id]) boardData[id]=[];
-            showBoard(id);
-        }
+        else { currentBoardId=id; currentPage=1; if(!boardData[id])boardData[id]=[]; showBoard(id); }
         window.scrollTo({top:0,behavior:'smooth'});
-    }
-
-    tree.addEventListener('click',     handleMenuEvent);
-    tree.addEventListener('touchend',  function(e){
-        /* touchend 로 처리할 때 click 이벤트 중복 방지 */
-        /* 여기서는 click 이벤트만 사용하고 touchend는 제거 */
     });
 }
 
@@ -725,7 +823,7 @@ function showLinkContent(item) {
 }
 
 /* ════════════════════════════════════════
-   게시판
+   게시판 (권한 반영)
 ════════════════════════════════════════ */
 function showBoard(menuId,page) {
     page=page||currentPage; currentPage=page;
@@ -763,11 +861,16 @@ function showBoard(menuId,page) {
     let pageBtns='';
     for(let i=1;i<=totalPages;i++) pageBtns+=`<button class="page-btn ${i===page?'active':''}" onclick="showBoard(${menuId},${i})">${i}</button>`;
 
+    /* ★ 글쓰기 버튼: 관리자만 */
+    const writeBtnHtml = isAdmin
+        ? `<button class="board-write-btn" onclick="openPostModal(${menuId},null)">✏️ 글쓰기</button>`
+        : '';
+
     document.getElementById('mainContent').innerHTML=`
         <div class="content-wrap">
             <div class="board-top">
                 <h2>${item.icon} ${item.name}</h2>
-                <button class="board-write-btn" onclick="openPostModal(${menuId},null)">✏️ 글쓰기</button>
+                ${writeBtnHtml}
             </div>
             <div class="board-search">
                 <select id="searchType" style="flex-shrink:0">
@@ -848,6 +951,12 @@ function showPostDetail(menuId,postId) {
     const post=(boardData[menuId]||[]).find(p=>p.id===postId);
     if(!post) return;
     post.views++; saveBoardDB();
+
+    /* ★ 수정·삭제 버튼: 관리자만 */
+    const editDeleteHtml = isAdmin ? `
+        <button class="btn-post-edit"   onclick="openPostModal(${menuId},${postId})">수정</button>
+        <button class="btn-post-delete" onclick="deletePost(${menuId},${postId})">삭제</button>` : '';
+
     document.getElementById('mainContent').innerHTML=`
         <div class="content-wrap">
             <div class="post-detail">
@@ -863,9 +972,8 @@ function showPostDetail(menuId,postId) {
                 </div>
                 <div class="post-detail-body">${escapeHtml(post.content)}</div>
                 <div class="post-detail-footer">
-                    <button class="btn-back"        onclick="showBoard(${menuId},${currentPage})">← 목록</button>
-                    <button class="btn-post-edit"   onclick="openPostModal(${menuId},${postId})">수정</button>
-                    <button class="btn-post-delete" onclick="deletePost(${menuId},${postId})">삭제</button>
+                    <button class="btn-back" onclick="showBoard(${menuId},${currentPage})">← 목록</button>
+                    ${editDeleteHtml}
                 </div>
             </div>
         </div>`;
@@ -873,6 +981,7 @@ function showPostDetail(menuId,postId) {
 }
 
 function openPostModal(menuId,postId) {
+    if (!isAdmin) { showToast('⚠️ 관리자 권한이 필요합니다.'); return; }
     currentBoardId=menuId; editingPostId=postId;
     if(postId){
         const post=(boardData[menuId]||[]).find(p=>p.id===postId);
@@ -892,6 +1001,7 @@ function openPostModal(menuId,postId) {
 function closePostModal(){ document.getElementById('postModal').classList.remove('active'); }
 
 async function submitPost() {
+    if (!isAdmin) { showToast('⚠️ 관리자 권한이 필요합니다.'); return; }
     const title=document.getElementById('postTitle').value.trim();
     const content=document.getElementById('postContent').value.trim();
     const category=document.getElementById('postCategory').value;
@@ -910,6 +1020,7 @@ async function submitPost() {
 }
 
 async function deletePost(menuId,postId) {
+    if (!isAdmin) { showToast('⚠️ 관리자 권한이 필요합니다.'); return; }
     if(!confirm('이 게시글을 삭제하시겠습니까?')) return;
     boardData[menuId]=(boardData[menuId]||[]).filter(p=>p.id!==postId);
     await saveBoardDB(); showBoard(menuId,1); showToast('🗑️ 게시글이 삭제되었습니다.');
@@ -919,6 +1030,7 @@ async function deletePost(menuId,postId) {
    메뉴 모달
 ════════════════════════════════════════ */
 function openAddMenuModal(parentId) {
+    if (!isAdmin) { showToast('⚠️ 관리자 권한이 필요합니다.'); return; }
     editingMenuId=null; selectedIcon='📄'; selectedType='board';
     document.getElementById('modalTitle').textContent=parentId?'하위 메뉴 추가':'새 메뉴 추가';
     document.getElementById('menuName').value='';
@@ -927,6 +1039,7 @@ function openAddMenuModal(parentId) {
     document.getElementById('menuModal').classList.add('active');
 }
 function openEditMenuModal(id) {
+    if (!isAdmin) { showToast('⚠️ 관리자 권한이 필요합니다.'); return; }
     const item=findMenuById(id,menuData); if(!item) return;
     editingMenuId=id; selectedIcon=item.icon; selectedType=item.type||'board';
     document.getElementById('modalTitle').textContent='메뉴 편집';
@@ -978,6 +1091,7 @@ function closeMenuModal(){ document.getElementById('menuModal').classList.remove
    저장 버튼
 ════════════════════════════════════════ */
 async function saveMenu(){
+    if (!isAdmin) { showToast('⚠️ 관리자 권한이 필요합니다.'); return; }
     const name=document.getElementById('menuName').value.trim();
     if(!name){alert('메뉴 이름을 입력해주세요.');return;}
     const url=document.getElementById('menuUrl').value.trim();
@@ -1017,7 +1131,7 @@ async function saveMenu(){
 }
 
 async function applyMenuSave(){
-    if(!pendingSaveData) return;
+    if (!isAdmin) return;
     const{id,name,icon,type,url}=pendingSaveData;
     updateMenuById(id,name,icon,type,url,menuData);
     await saveMenuDB(); renderMenu(); initMenuEvents();
@@ -1044,6 +1158,7 @@ function addChildMenu(parentId,newMenu,items){
     return false;
 }
 async function deleteMenu(id){
+    if (!isAdmin) { showToast('⚠️ 관리자 권한이 필요합니다.'); return; }
     if(!confirm('이 메뉴를 삭제하시겠습니까?\n하위 메뉴도 함께 삭제됩니다.')) return;
     menuData=removeMenuById(id,menuData);
     await saveMenuDB(); renderMenu(); initMenuEvents();
@@ -1079,10 +1194,17 @@ function showToast(msg){
     toastTimer=setTimeout(()=>t.classList.remove('show'),2500);
 }
 
+/* 모달 외부 클릭 닫기 */
 ['menuModal','postModal','confirmModal'].forEach(id=>{
     document.getElementById(id).addEventListener('click',e=>{
         if(e.target===e.currentTarget) document.getElementById(id).classList.remove('active');
     });
+});
+document.getElementById('loginModal').addEventListener('click',e=>{
+    if(e.target===e.currentTarget) closeLoginModal();
+});
+document.getElementById('logoutModal').addEventListener('click',e=>{
+    if(e.target===e.currentTarget) closeLogoutModal();
 });
 
 /* ════════════════════════════════════════
@@ -1091,11 +1213,11 @@ function showToast(msg){
 (async()=>{
     const ok = await loadData();
     document.getElementById('loadingOverlay').style.display='none';
+    updateModeBadge();   /* 사용자 모드로 초기화 */
     renderMenu();
-    initMenuEvents();   /* ★ 이벤트 위임 등록 */
+    initMenuEvents();
     if(!ok) showToast('⚠️ DB 연결 실패 — 로컬 데이터로 동작 중');
 })();
 </script>
 </body>
 </html>
-
