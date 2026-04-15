@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>SK텔레콤 제주</title>
+    <style>
+        *, *::before, *::after {
+            margin: 0; padding: 0; box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background: #fff; color: #111; min-height: 100vh;
+            overflow-x: hidden;
+            font-family: 'Malgun Gothic','맑은 고딕','Apple SD Gothic Neo',sans-serif;
+        }
+
+        /* ── 헤더 ── */
+        header {
+            position: fixed; top: 0; left: 0; right: 0; height: 56px;
+            background: #fff; border-bottom: 1px solid #e5e5e5;
+            display: flex; align-items: center; padding: 0 16px;
+            z-index: 1000; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .header-logo {
+            display: flex; align-items: center; gap: 10px;
+            cursor: pointer; user-select: none; flex: 1; min-width: 0;
+        }
+        .header-logo:active { opacity: 0.7; }
+        .logo-icon {
+            width: 36px; height: 36px; background: #E51C23;
+            border-radius: 9px; display: flex; align-items: center;
+            justify-content: center; font-weight: 900; color: #fff;
+            font-size: 12px; flex-shrink: 0;
+        }
+        .header-title-wrap { display: flex; flex-direction: column; min-width: 0; }
+        .header-title { color: #111; font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .header-subtitle { color: #999; font-size: 10px; margin-top: 1px; white-space: nowrap; }
+
+        .hamburger {
+            display: none; flex-direction: column; justify-content: center;
+            gap: 5px; width: 36px; height: 36px; background: none;
+            border: none; cursor: pointer; padding: 4px; flex-shrink: 0;
+        }
+        .hamburger span { display: block; width: 22px; height: 2px; background: #333; border-radius: 2px; transition: all 0.3s; }
+        .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+        .header-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+        .header-chip {
+            background: #f5f5f5; color: #444; padding: 4px 10px;
+            border-radius: 16px; font-size: 11px; border: 1px solid #e8e8e8; white-space: nowrap;
+        }
+
+        /* ── 레이아웃 ── */
+        .layout { display: flex; margin-top: 56px; min-height: calc(100vh - 56px); }
+
+        .sidebar-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.4); z-index: 800;
+        }
+        .sidebar-overlay.show { display: block; }
+
+        /* ── 사이드바 ── */
+        .sidebar {
+            width: 240px; flex-shrink: 0; background: #fafafa;
+            border-right: 1px solid #e5e5e5;
+            height: calc(100vh - 56px); overflow-y: auto;
+            position: sticky; top: 56px; align-self: flex-start;
+            transition: transform 0.3s ease;
+        }
+        .sidebar-header { padding: 16px 14px 10px; border-bottom: 1px solid #ececec; margin-bottom: 6px; }
+        .sidebar-header h3 { color: #555; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+        .add-menu-btn {
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            margin: 8px 10px; padding: 10px 14px; background: #E51C23;
+            color: white; border: none; border-radius: 8px; cursor: pointer;
+            font-size: 13px; font-weight: 700; width: calc(100% - 20px);
+        }
+        .add-menu-btn:active { background: #c0392b; }
+
+        .menu-tree { padding: 4px 0 20px; }
+        .menu-item { position: relative; }
+        .menu-item-header {
+            display: flex; align-items: center; padding: 10px 12px;
+            cursor: pointer; border-left: 3px solid transparent;
+            gap: 7px; transition: background 0.15s; user-select: none;
+        }
+        .menu-item-header:active { background: #f0f0f0; }
+        .menu-item-header.active { background: #fff0f0; border-left-color: #E51C23; }
+        .menu-item-header.active .menu-label { color: #E51C23; font-weight: 700; }
+        .menu-toggle { width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #aaa; transition: transform 0.25s; flex-shrink: 0; }
+        .menu-toggle.open { transform: rotate(90deg); }
+        .menu-toggle.invisible { visibility: hidden; }
+        .menu-icon { font-size: 15px; flex-shrink: 0; }
+        .menu-label { flex: 1; font-size: 13px; font-weight: 500; color: #222; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .menu-type-badge { font-size: 9px; padding: 2px 5px; border-radius: 4px; font-weight: 700; flex-shrink: 0; }
+        .badge-board { background: #e8f0fe; color: #1a56db; }
+        .badge-link  { background: #f3e8ff; color: #7c3aed; }
+        .menu-actions { display: none; gap: 3px; flex-shrink: 0; }
+        .menu-item-header:hover .menu-actions { display: flex; }
+        .menu-action-btn { width: 22px; height: 22px; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+        .btn-add-child { background: #e8f5e9; color: #2e7d32; }
+        .btn-add-child:hover { background: #2e7d32; color: white; }
+        .btn-edit { background: #e3f2fd; color: #1565c0; }
+        .btn-edit:hover { background: #1565c0; color: white; }
+        .btn-delete { background: #fce4ec; color: #c62828; }
+        .btn-delete:hover { background: #c62828; color: white; }
+        .submenu { display: none; padding-left: 16px; border-left: 1px dashed #ddd; margin-left: 20px; }
+        .submenu.open { display: block; }
+        .submenu .menu-item-header { padding: 8px 10px; }
+        .submenu .menu-label { font-size: 12px; }
+        .empty-menu { text-align: center; padding: 24px 16px; color: #bbb; font-size: 12px; line-height: 1.8; }
+        .depth-dot { width: 3px; height: 3px; border-radius: 50%; background: #ccc; display: inline-block; margin-right: 2px; }
+        .sidebar::-webkit-scrollbar { width: 3px; }
+        .sidebar::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }
+
+        /* ── 메인 ── */
+        .main-content { flex: 1; min-width: 0; background: #fff; }
+
+        /* ── 히어로 ── */
+        .hero-section {
+            position: relative; width: 100%;
+            height: calc(100vh - 56px);
+            overflow: hidden; display: flex; align-items: flex-end;
+        }
+        .hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 40%; }
+        .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.15) 50%, transparent 100%); }
+        .hero-content { position: relative; z-index: 2; padding: 36px 28px; color: #fff; max-width: 600px; }
+        .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: #E51C23; color: white; font-size: 11px; font-weight: 700; padding: 5px 13px; border-radius: 20px; margin-bottom: 14px; }
+        .hero-title { font-size: 32px; font-weight: 800; line-height: 1.25; margin-bottom: 12px; letter-spacing: -0.5px; text-shadow: 0 2px 12px rgba(0,0,0,0.3); }
+        .hero-sub { font-size: 14px; color: rgba(255,255,255,0.85); line-height: 1.7; margin-bottom: 22px; }
+        .hero-tags { display: flex; gap: 7px; flex-wrap: wrap; }
+        .hero-tag { background: rgba(255,255,255,0.16); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.28); color: #fff; font-size: 12px; padding: 5px 13px; border-radius: 20px; }
+        .hero-hint { position: absolute; bottom: 24px; right: 28px; z-index: 2; color: rgba(255,255,255,0.55); font-size: 11px; display: flex; align-items: center; gap: 5px; }
+        .hint-arrow { animation: bounce 2s infinite; display: inline-block; }
+        @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
+
+        /* ── 컨텐츠 ── */
+        .content-wrap { padding: 20px 16px; animation: fadeIn 0.25s ease; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+        /* ── 게시판 ── */
+        .board-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+        .board-top h2 { font-size: 18px; font-weight: 700; color: #111; display: flex; align-items: center; gap: 8px; }
+        .board-write-btn { padding: 9px 18px; background: #E51C23; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 700; }
+        .board-write-btn:active { background: #c0392b; }
+        .board-search { display: flex; gap: 7px; margin-bottom: 14px; background: #fafafa; border: 1px solid #e8e8e8; border-radius: 10px; padding: 10px 12px; flex-wrap: wrap; }
+        .board-search select, .board-search input { padding: 8px 10px; border: 1px solid #e0e0e0; border-radius: 7px; font-size: 13px; outline: none; background: #fff; }
+        .board-search select:focus, .board-search input:focus { border-color: #E51C23; }
+        .board-search input { flex: 1; min-width: 120px; }
+        .search-btn { padding: 8px 16px; background: #111; color: white; border: none; border-radius: 7px; cursor: pointer; font-size: 13px; font-weight: 600; }
+        .board-table-wrap { border: 1px solid #e8e8e8; border-radius: 10px; overflow: hidden; }
+        .board-table { width: 100%; border-collapse: collapse; }
+        .board-table thead tr { background: #f8f8f8; }
+        .board-table th { padding: 11px 12px; font-size: 12px; color: #666; font-weight: 700; border-bottom: 1px solid #e8e8e8; text-align: center; }
+        .board-table td { padding: 11px 12px; font-size: 13px; color: #333; border-bottom: 1px solid #f0f0f0; text-align: center; vertical-align: middle; }
+        .board-table tbody tr:last-child td { border-bottom: none; }
+        .board-table td.title-cell { text-align: left; cursor: pointer; }
+        .board-table td.title-cell:hover { color: #E51C23; }
+        .board-table tbody tr:hover { background: #fafafa; }
+        .post-badge { padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; margin-right: 4px; }
+        .badge-notice-post { background: #E51C23; color: white; }
+        .badge-new-post { background: #ff9800; color: white; }
+        .board-pagination { display: flex; justify-content: center; gap: 5px; margin-top: 16px; flex-wrap: wrap; }
+        .page-btn { width: 34px; height: 34px; border: 1px solid #e0e0e0; background: white; border-radius: 7px; cursor: pointer; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; color: #444; }
+        .page-btn.active { background: #E51C23; border-color: #E51C23; color: white; }
+
+        /* ── 게시글 상세 ── */
+        .post-detail { max-width: 860px; }
+        .post-detail-header { border-bottom: 1px solid #ececec; padding-bottom: 16px; margin-bottom: 20px; }
+        .post-detail-title { font-size: 20px; font-weight: 700; color: #111; margin-bottom: 10px; line-height: 1.4; word-break: keep-all; }
+        .post-detail-meta { display: flex; gap: 14px; font-size: 12px; color: #999; flex-wrap: wrap; }
+        .post-detail-body { font-size: 14px; color: #333; line-height: 1.9; min-height: 160px; padding: 8px 0 20px; border-bottom: 1px solid #ececec; word-break: keep-all; white-space: pre-wrap; }
+        .post-detail-footer { display: flex; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
+        .btn-back { padding: 9px 18px; border: 1px solid #ddd; background: white; border-radius: 8px; cursor: pointer; font-size: 13px; color: #444; }
+        .btn-post-edit { padding: 9px 18px; background: #111; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; }
+        .btn-post-delete { padding: 9px 18px; background: #fff0f0; color: #c62828; border: 1px solid #fcc; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; }
+        .btn-post-delete:hover { background: #E51C23; color: white; }
+
+        /* ── 링크 ── */
+        .link-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #fafafa; border: 1px solid #e8e8e8; border-radius: 10px 10px 0 0; flex-wrap: wrap; gap: 8px; }
+        .link-header-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+        .link-header-left h3 { font-size: 14px; font-weight: 700; color: #111; }
+        .link-url-display { font-size: 11px; color: #999; background: #efefef; padding: 3px 8px; border-radius: 5px; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .link-open-btn { padding: 7px 14px; background: #7c3aed; color: white; border: none; border-radius: 7px; cursor: pointer; font-size: 12px; font-weight: 700; text-decoration: none; display: inline-block; }
+        .link-iframe-wrap { border: 1px solid #e8e8e8; border-top: none; border-radius: 0 0 10px 10px; overflow: hidden; }
+        .link-iframe-wrap iframe { width: 100%; height: calc(100vh - 180px); border: none; display: block; }
+
+        /* ── 공통 모달 ── */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 2000; align-items: flex-end; justify-content: center; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: white; border-radius: 20px 20px 0 0; padding: 20px 20px 36px; width: 100%; max-width: 600px; max-height: 92vh; overflow-y: auto; box-shadow: 0 -8px 32px rgba(0,0,0,0.15); animation: slideUp 0.28s ease; }
+        @media(min-width:600px){ .modal-overlay{align-items:center;} .modal{border-radius:16px;max-height:88vh;} }
+        @keyframes slideUp { from{transform:translateY(40px);opacity:0} to{transform:translateY(0);opacity:1} }
+        .modal-handle { width: 40px; height: 4px; background: #e0e0e0; border-radius: 2px; margin: 0 auto 18px; }
+        .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .modal-header h3 { color: #111; font-size: 17px; font-weight: 700; }
+        .modal-close { width: 30px; height: 30px; border: none; background: #f5f5f5; border-radius: 50%; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; color: #555; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 700; color: #555; margin-bottom: 7px; }
+        .form-group input[type="text"], .form-group input[type="url"], .form-group select { width: 100%; padding: 12px 13px; border: 1px solid #ddd; border-radius: 10px; font-size: 15px; outline: none; background: #fff; color: #111; -webkit-appearance: none; }
+        .form-group input:focus, .form-group select:focus { border-color: #E51C23; }
+        .type-toggle { display: flex; gap: 10px; }
+        .type-btn { flex: 1; padding: 14px 8px; border: 1.5px solid #e0e0e0; background: white; border-radius: 12px; cursor: pointer; text-align: center; }
+        .type-btn.selected-board { border-color: #1a56db; background: #eff6ff; }
+        .type-btn.selected-link  { border-color: #7c3aed; background: #f5f3ff; }
+        .type-btn .type-icon { font-size: 26px; margin-bottom: 5px; }
+        .type-btn .type-name { font-size: 13px; font-weight: 700; color: #222; }
+        .type-btn .type-desc { font-size: 11px; color: #999; margin-top: 2px; }
+        .link-input-area { display: none; }
+        .link-input-area.show { display: block; }
+        .icon-selector { max-height: 180px; overflow-y: auto; }
+        .icon-selector::-webkit-scrollbar { width: 3px; }
+        .icon-selector::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }
+        .icon-group-label { font-size: 10px; font-weight: 700; color: #aaa; letter-spacing: 0.5px; padding: 6px 0 4px; border-top: 1px solid #f0f0f0; margin-top: 4px; }
+        .icon-group-label:first-child { border-top: none; margin-top: 0; padding-top: 0; }
+        .icon-grid { display: grid; grid-template-columns: repeat(8,1fr); gap: 5px; margin-bottom: 4px; }
+        .icon-option { width: 36px; height: 36px; border: 1.5px solid #e8e8e8; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
+        .icon-option.selected { border-color: #E51C23; background: #fff0f0; box-shadow: 0 0 0 2px rgba(229,28,35,0.15); }
+        .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 22px; }
+        .btn-cancel  { padding: 12px 22px; border: 1px solid #ddd; background: white; border-radius: 10px; cursor: pointer; font-size: 14px; color: #444; flex: 1; text-align: center; }
+        .btn-confirm { padding: 12px 22px; background: #E51C23; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 700; flex: 2; }
+        .btn-confirm:active { background: #c0392b; }
+
+        /* ── 저장 확인 팝업 ── */
+        #confirmModal .modal { text-align: center; }
+        .confirm-icon { font-size: 44px; margin-bottom: 12px; }
+        .confirm-title { font-size: 17px; font-weight: 700; color: #111; margin-bottom: 6px; }
+        .confirm-sub { font-size: 13px; color: #888; }
+        .confirm-diff { background: #fafafa; border-radius: 10px; padding: 14px 16px; margin: 14px 0 6px; text-align: left; font-size: 13px; border: 1px solid #ececec; }
+        .diff-row { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; border-bottom: 1px dashed #ececec; }
+        .diff-row:last-child { border-bottom: none; }
+        .diff-label { font-weight: 700; color: #aaa; min-width: 50px; font-size: 11px; padding-top: 2px; }
+        .diff-before { color: #c62828; text-decoration: line-through; flex: 1; word-break: break-all; }
+        .diff-arrow { color: #ccc; font-size: 11px; padding-top: 2px; }
+        .diff-after { color: #1b5e20; font-weight: 700; flex: 1; word-break: break-all; }
+        #confirmModal .modal-footer { justify-content: center; gap: 12px; }
+        .btn-confirm-save   { padding: 12px 30px; background: #E51C23; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 700; flex: 1; }
+        .btn-confirm-cancel { padding: 12px 30px; border: 1px solid #ddd; background: white; border-radius: 10px; cursor: pointer; font-size: 14px; color: #555; flex: 1; }
+
+        /* ── 글쓰기 ── */
+        .post-form-group { margin-bottom: 16px; }
+        .post-form-group label { display: block; font-size: 12px; font-weight: 700; color: #555; margin-bottom: 7px; }
+        .post-form-group input[type="text"], .post-form-group textarea, .post-form-group select { width: 100%; padding: 12px 13px; border: 1px solid #ddd; border-radius: 10px; font-size: 15px; outline: none; font-family: inherit; color: #111; -webkit-appearance: none; }
+        .post-form-group input:focus, .post-form-group textarea:focus, .post-form-group select:focus { border-color: #E51C23; }
+        .post-form-group textarea { height: 240px; resize: vertical; line-height: 1.7; }
+
+        /* ── Supabase 설정 모달 ── */
+        .setup-box { background: #fffbf0; border: 1px solid #fde68a; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+        .setup-box h4 { font-size: 14px; font-weight: 700; color: #92400e; margin-bottom: 10px; }
+        .setup-box p { font-size: 12px; color: #78350f; line-height: 1.6; margin-bottom: 10px; }
+        .setup-box a { color: #1d4ed8; text-decoration: underline; }
+
+        /* ── 로딩 ── */
+        .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+        .loading-spinner { width: 40px; height: 40px; border: 3px solid #f0f0f0; border-top-color: #E51C23; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to{transform:rotate(360deg)} }
+        .loading-text { font-size: 14px; color: #666; font-weight: 600; }
+
+        /* ── 토스트 ── */
+        #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(16px); background: #111; color: white; padding: 11px 22px; border-radius: 24px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 20px rgba(0,0,0,0.18); opacity: 0; transition: all 0.3s ease; z-index: 9999; pointer-events: none; white-space: nowrap; }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* ── 저장 상태 ── */
+        .storage-indicator { position: fixed; bottom: 10px; right: 12px; font-size: 10px; color: #bbb; z-index: 500; display: flex; align-items: center; gap: 4px; }
+        .storage-dot { width: 6px; height: 6px; border-radius: 50%; background: #4caf50; }
+        .storage-dot.saving { background: #ff9800; animation: pulse 0.8s infinite; }
+        .storage-dot.error  { background: #ef4444; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+        /* ── 반응형 ── */
+        @media(max-width:768px){
+            .hamburger { display: flex; }
+            .header-right .header-chip { display: none; }
+            .sidebar { position: fixed; top: 56px; left: 0; bottom: 0; z-index: 900; transform: translateX(-100%); height: calc(100vh - 56px); }
+            .sidebar.open { transform: translateX(0); }
+            .layout { display: block; }
+            .main-content { width: 100%; }
+            .hero-title { font-size: 26px; }
+            .hero-content { padding: 28px 20px; }
+            .board-table .hide-mobile { display: none; }
+            .icon-grid { grid-template-columns: repeat(7,1fr); }
+        }
+        @media(max-width:400px){
+            .icon-grid { grid-template-columns: repeat(6,1fr); }
+            .hero-title { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 로딩 -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">데이터를 불러오는 중...</div>
+</div>
+
+<!-- 헤더 -->
+<header>
+    <div class="header-logo" onclick="goHome()">
+        <div class="logo-icon">SK</div>
+        <div class="header-title-wrap">
+            <div class="header-title">SK텔레콤 제주</div>
+            <div class="header-subtitle">제주마케팅팀 · 유통망 정보공유 포털</div>
+        </div>
+    </div>
+    <div class="header-right">
+        <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
+            <span></span><span></span><span></span>
+        </button>
+        <span class="header-chip">👤 관리자</span>
+    </div>
+</header>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<div class="layout">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header"><h3>메뉴</h3></div>
+        <button class="add-menu-btn" onclick="openAddMenuModal(null)">＋ 새 메뉴 추가</button>
+        <div class="menu-tree" id="menuTree"></div>
+    </aside>
+    <main class="main-content" id="mainContent">
+        <div class="hero-section">
+            <img class="hero-img" src="jeju.jpg" alt="제주 바다" onerror="this.style.display='none';">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <div class="hero-badge">🌊 SK Telecom Jeju</div>
+                <div class="hero-title">제주마케팅팀<br>정보공유 포털</div>
+                <div class="hero-sub">최신 마케팅 정보, 제품 안내, 판매 현황을<br>유통망과 함께 공유합니다.</div>
+                <div class="hero-tags">
+                    <span class="hero-tag">📱 5G 서비스</span>
+                    <span class="hero-tag">🍊 제주 전용 혜택</span>
+                    <span class="hero-tag">📊 판매 현황</span>
+                    <span class="hero-tag">🎯 마케팅 캠페인</span>
+                </div>
+            </div>
+            <div class="hero-hint"><span>메뉴를 선택하세요</span><span class="hint-arrow">↓</span></div>
+        </div>
+    </main>
+</div>
+
+<div class="storage-indicator">
+    <div class="storage-dot" id="storageDot"></div>
+    <span id="storageLabel">저장됨</span>
+</div>
+
+<!-- ══ 메뉴 모달 ══ -->
+<div class="modal-overlay" id="menuModal">
+    <div class="modal">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+            <h3 id="modalTitle">새 메뉴 추가</h3>
+            <button class="modal-close" onclick="closeMenuModal()">✕</button>
+        </div>
+        <div class="form-group"><label>메뉴 이름 *</label><input type="text" id="menuName" placeholder="메뉴 이름을 입력하세요"></div>
+        <div class="form-group"><label>상위 메뉴</label><select id="parentMenu"><option value="">최상위 메뉴 (루트)</option></select></div>
+        <div class="form-group">
+            <label>메뉴 타입 *</label>
+            <div class="type-toggle">
+                <div class="type-btn selected-board" id="typeBtnBoard" onclick="selectType('board')">
+                    <div class="type-icon">📋</div><div class="type-name">게시판</div><div class="type-desc">글 작성·조회</div>
+                </div>
+                <div class="type-btn" id="typeBtnLink" onclick="selectType('link')">
+                    <div class="type-icon">🔗</div><div class="type-name">하이퍼링크</div><div class="type-desc">외부 URL 연결</div>
+                </div>
+            </div>
+        </div>
+        <div class="link-input-area" id="linkInputArea">
+            <div class="form-group"><label>연결 URL *</label><input type="url" id="menuUrl" placeholder="https://example.com"></div>
+        </div>
+        <div class="form-group"><label>아이콘 선택</label><div class="icon-selector" id="iconSelector"></div></div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeMenuModal()">취소</button>
+            <button class="btn-confirm" onclick="saveMenu()">저장</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══ 저장 확인 팝업 ══ -->
+<div class="modal-overlay" id="confirmModal">
+    <div class="modal">
+        <div class="modal-handle"></div>
+        <div class="confirm-icon">💾</div>
+        <div class="confirm-title">메뉴 수정 내용을 저장할까요?</div>
+        <div class="confirm-sub">아래 변경사항을 확인해 주세요.</div>
+        <div class="confirm-diff" id="confirmDiff"></div>
+        <div class="modal-footer">
+            <button class="btn-confirm-cancel" onclick="closeConfirmModal()">취소</button>
+            <button class="btn-confirm-save" onclick="applyMenuSave()">저장</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══ 글쓰기 모달 ══ -->
+<div class="modal-overlay" id="postModal">
+    <div class="modal">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+            <h3 id="postModalTitle">글쓰기</h3>
+            <button class="modal-close" onclick="closePostModal()">✕</button>
+        </div>
+        <div class="post-form-group"><label>말머리</label>
+            <select id="postCategory">
+                <option value="">없음</option><option value="공지">공지</option>
+                <option value="안내">안내</option><option value="질문">질문</option><option value="자료">자료</option>
+            </select>
+        </div>
+        <div class="post-form-group"><label>제목 *</label><input type="text" id="postTitle" placeholder="제목을 입력하세요"></div>
+        <div class="post-form-group"><label>내용</label><textarea id="postContent" placeholder="내용을 입력하세요..."></textarea></div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closePostModal()">취소</button>
+            <button class="btn-confirm" onclick="submitPost()">등록</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══ Supabase 설정 모달 ══ -->
+<div class="modal-overlay active" id="setupModal">
+    <div class="modal">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+            <h3>⚙️ 데이터베이스 연결 설정</h3>
+        </div>
+        <div class="setup-box">
+            <h4>📋 Supabase 설정 방법</h4>
+            <p>
+                1. <a href="https://supabase.com" target="_blank">supabase.com</a> 에서 무료 프로젝트 생성<br>
+                2. SQL Editor에서 아래 쿼리 실행:<br><br>
+                <code style="background:#f5f5f5;padding:8px;border-radius:6px;display:block;font-size:11px;line-height:1.8">
+CREATE TABLE app_data (<br>
+&nbsp;&nbsp;key TEXT PRIMARY KEY,<br>
+&nbsp;&nbsp;value JSONB NOT NULL<br>
+);<br>
+ALTER TABLE app_data ENABLE ROW LEVEL SECURITY;<br>
+CREATE POLICY "allow_all" ON app_data<br>
+&nbsp;&nbsp;FOR ALL USING (true) WITH CHECK (true);
+                </code><br>
+                3. Settings → API 에서 URL과 anon key 복사
+            </p>
+        </div>
+        <div class="form-group">
+            <label>Supabase Project URL *</label>
+            <input type="url" id="setupUrl" placeholder="https://xxxxxxxxxxxx.supabase.co">
+        </div>
+        <div class="form-group">
+            <label>Supabase Anon Key *</label>
+            <input type="text" id="setupKey" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+        </div>
+        <div class="modal-footer">
+            <button class="btn-confirm" onclick="saveSetup()" style="flex:1">연결 확인 및 저장</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ════════════════════════════════════════
+   아이콘 그룹
+════════════════════════════════════════ */
+const ICON_GROUPS = [
+    { label:'업무 · 일반',
+      icons:['📄','📢','🎯','📱','🏪','📚','💰','📊','🎉','🚨','📣','📁','📲','💳','⭐','📍','📖','📋','🔔','⚙️','🔗','🌐','👤','📧','🖥️','📌','✅','📝','🗂️','📤'] },
+    { label:'🌊 바다 · 해양',
+      icons:['🌊','🏄','🐚','🐠','🐋','🦈','🐬','🐙','🦑','🦀','🐡','⛵','🚢','🏖️','🏝️','⚓','🤿','💧'] },
+    { label:'🍊 제주 자연 · 식물',
+      icons:['🍊','🍋','🌿','🌺','🌸','🌼','🌻','🌱','🍃','🌾','🎋','🌴','🍵','🫖','🧃','🥝'] },
+    { label:'🌋 산 · 지형 · 현무암',
+      icons:['🏔️','⛰️','🗻','🌋','🪨','🏕️','🌄','🌅','🌠','☀️','🌤️','⛅','🌬️','🌀','❄️','🌈'] },
+    { label:'🐎 제주 동물',
+      icons:['🐎','🦌','🦋','🐦','🦚','🦜','🐄','🐑','🐇','🦔','🐝','🌾'] },
+    { label:'✈️ 여행 · 생활',
+      icons:['✈️','🗺️','🧭','🎒','📸','🏨','🍜','🍱','🥘','🎊','🎠','🎡','⛩️','🏯','🗿','🪆'] }
+];
+
+/* ════════════════════════════════════════
+   Supabase 클라이언트
+════════════════════════════════════════ */
+const LS_SB_URL = 'skt_sb_url';
+const LS_SB_KEY = 'skt_sb_key';
+
+let SUPABASE_URL = localStorage.getItem(LS_SB_URL) || '';
+let SUPABASE_KEY = localStorage.getItem(LS_SB_KEY) || '';
+
+async function sbRequest(method, body = null) {
+    const url = `${SUPABASE_URL}/rest/v1/app_data`;
+    const headers = {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': method === 'POST' ? 'resolution=merge-duplicates' : ''
+    };
+    const opts = { method, headers };
+    if (body) opts.body = JSON.stringify(body);
+    const r = await fetch(url + (method === 'GET' ? '?select=key,value' : ''), opts);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return method === 'GET' ? r.json() : true;
+}
+
+async function dbGet(key) {
+    const rows = await sbRequest('GET');
+    const row  = rows.find(r => r.key === key);
+    return row ? row.value : null;
+}
+
+async function dbSet(key, value) {
+    await sbRequest('POST', [{ key, value }]);
+}
+
+/* ════════════════════════════════════════
+   전역 상태
+════════════════════════════════════════ */
+let menuData=[], boardData={}, nextId=100, nextPostId=1000;
+let editingMenuId=null, selectedIcon='📄', selectedType='board';
+let currentBoardId=null, currentPage=1, editingPostId=null, pendingSaveData=null;
+const PAGE_SIZE = 10;
+
+const DEFAULT_MENU = [
+    { id:1, name:'공지사항', icon:'📢', type:'board', url:'', parentId:null,
+      children:[
+        {id:11,name:'일반 공지',  icon:'📄',type:'board',url:'',parentId:1,children:[]},
+        {id:12,name:'긴급 공지',  icon:'🚨',type:'board',url:'',parentId:1,children:[]},
+        {id:13,name:'이벤트 안내',icon:'🎉',type:'board',url:'',parentId:1,children:[]}
+      ]},
+    { id:2, name:'마케팅 정보', icon:'🎯', type:'board', url:'', parentId:null,
+      children:[
+        {id:21,name:'프로모션',     icon:'💰',type:'board',url:'',parentId:2,children:[]},
+        {id:22,name:'캠페인',       icon:'📣',type:'board',url:'',parentId:2,children:[]},
+        {id:23,name:'마케팅 자료실',icon:'📁',type:'board',url:'',parentId:2,children:[]}
+      ]},
+    { id:3, name:'제품/요금제', icon:'📱', type:'board', url:'', parentId:null,
+      children:[
+        {id:31,name:'단말기 정보',icon:'📲',type:'board',url:'',parentId:3,children:[]},
+        {id:32,name:'요금제 안내',icon:'💳',type:'board',url:'',parentId:3,children:[]},
+        {id:33,name:'부가서비스', icon:'⭐',type:'board',url:'',parentId:3,children:[]}
+      ]},
+    { id:4, name:'유통망 관리', icon:'🏪', type:'board', url:'', parentId:null,
+      children:[
+        {id:41,name:'판매점 현황',icon:'📍',type:'board',url:'',parentId:4,children:[]},
+        {id:42,name:'실적 관리',  icon:'📊',type:'board',url:'',parentId:4,children:[]}
+      ]},
+    { id:5, name:'SK텔레콤 공식', icon:'🌐', type:'link',
+      url:'https://www.sktelecom.com', parentId:null, children:[] }
+];
+
+/* ════════════════════════════════════════
+   저장 / 로드
+════════════════════════════════════════ */
+function setSaving(state) {
+    const dot = document.getElementById('storageDot');
+    const lbl = document.getElementById('storageLabel');
+    if (state === 'saving') { dot.className='storage-dot saving'; lbl.textContent='저장 중...'; }
+    else if (state === 'error') { dot.className='storage-dot error'; lbl.textContent='저장 실패'; }
+    else { dot.className='storage-dot'; lbl.textContent='저장됨'; }
+}
+
+function saveLocal() {
+    try {
+        localStorage.setItem('skt_menu',  JSON.stringify({menu:menuData,nextId}));
+        localStorage.setItem('skt_board', JSON.stringify({board:boardData,nextPostId}));
+    } catch(e){}
+}
+
+function loadLocal() {
+    try {
+        const sm = localStorage.getItem('skt_menu');
+        const sb = localStorage.getItem('skt_board');
+        if (sm) { const d=JSON.parse(sm); menuData=d.menu||[]; nextId=d.nextId||100; }
+        else menuData = JSON.parse(JSON.stringify(DEFAULT_MENU));
+        if (sb) { const d=JSON.parse(sb); boardData=d.board||{}; nextPostId=d.nextPostId||1000; }
+    } catch(e) {
+        menuData = JSON.parse(JSON.stringify(DEFAULT_MENU));
+        boardData = {};
+    }
+}
+
+async function saveMenuDB() {
+    setSaving('saving');
+    try {
+        await dbSet('menu', {menu:menuData, nextId});
+        saveLocal();
+        setSaving('done');
+    } catch(e) {
+        saveLocal();
+        setSaving('error');
+    }
+}
+
+async function saveBoardDB() {
+    setSaving('saving');
+    try {
+        await dbSet('board', {board:boardData, nextPostId});
+        saveLocal();
+        setSaving('done');
+    } catch(e) {
+        saveLocal();
+        setSaving('error');
+    }
+}
+
+async function loadData() {
+    if (!SUPABASE_URL || !SUPABASE_KEY) {
+        loadLocal();
+        return false; // 설정 필요
+    }
+    try {
+        document.getElementById('loadingText').textContent = 'DB에서 데이터를 불러오는 중...';
+        const [md, bd] = await Promise.all([dbGet('menu'), dbGet('board')]);
+
+        if (md) { menuData=md.menu||[]; nextId=md.nextId||100; }
+        else {
+            menuData = JSON.parse(JSON.stringify(DEFAULT_MENU));
+            await dbSet('menu', {menu:menuData, nextId});
+        }
+        if (bd) { boardData=bd.board||{}; nextPostId=bd.nextPostId||1000; }
+        else {
+            boardData = {};
+            await dbSet('board', {board:boardData, nextPostId});
+        }
+        saveLocal();
+        return true;
+    } catch(e) {
+        console.warn('DB 로드 실패, 로컬 사용:', e);
+        loadLocal();
+        return false;
+    }
+}
+
+/* ════════════════════════════════════════
+   Supabase 설정 저장
+════════════════════════════════════════ */
+async function saveSetup() {
+    const url = document.getElementById('setupUrl').value.trim().replace(/\/$/, '');
+    const key = document.getElementById('setupKey').value.trim();
+    if (!url || !key) { alert('URL과 Key를 모두 입력해주세요.'); return; }
+
+    document.querySelector('#setupModal .btn-confirm').textContent = '연결 확인 중...';
+
+    try {
+        // 연결 테스트
+        const r = await fetch(`${url}/rest/v1/app_data?select=key&limit=1`, {
+            headers: { 'apikey': key, 'Authorization': `Bearer ${key}` }
+        });
+        if (!r.ok) throw new Error(`HTTP ${r.status} — URL 또는 Key를 확인해주세요.`);
+
+        SUPABASE_URL = url;
+        SUPABASE_KEY = key;
+        localStorage.setItem(LS_SB_URL, url);
+        localStorage.setItem(LS_SB_KEY, key);
+
+        document.getElementById('setupModal').classList.remove('active');
+        document.getElementById('loadingOverlay').style.display = 'flex';
+        document.getElementById('loadingText').textContent = 'DB에서 데이터를 불러오는 중...';
+
+        await loadData();
+        document.getElementById('loadingOverlay').style.display = 'none';
+        renderMenu();
+        showToast('✅ Supabase 연결 성공!');
+    } catch(e) {
+        alert('연결 실패: ' + e.message);
+        document.querySelector('#setupModal .btn-confirm').textContent = '연결 확인 및 저장';
+    }
+}
+
+/* ════════════════════════════════════════
+   사이드바 토글
+════════════════════════════════════════ */
+function toggleSidebar() {
+    const sb=document.getElementById('sidebar'), ov=document.getElementById('sidebarOverlay'), hb=document.getElementById('hamburger');
+    const open=sb.classList.toggle('open');
+    hb.classList.toggle('open',open);
+    if(open){ ov.classList.add('show'); document.body.style.overflow='hidden'; }
+    else    { ov.classList.remove('show'); document.body.style.overflow=''; }
+}
+function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('show');
+    document.getElementById('hamburger').classList.remove('open');
+    document.body.style.overflow='';
+}
+
+/* ════════════════════════════════════════
+   홈
+════════════════════════════════════════ */
+function goHome() {
+    closeSidebar();
+    document.querySelectorAll('.menu-item-header').forEach(h=>h.classList.remove('active'));
+    document.getElementById('mainContent').innerHTML=`
+        <div class="hero-section">
+            <img class="hero-img" src="jeju.jpg" alt="제주 바다" onerror="this.style.display='none';">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <div class="hero-badge">🌊 SK Telecom Jeju</div>
+                <div class="hero-title">제주마케팅팀<br>정보공유 포털</div>
+                <div class="hero-sub">최신 마케팅 정보, 제품 안내, 판매 현황을<br>유통망과 함께 공유합니다.</div>
+                <div class="hero-tags">
+                    <span class="hero-tag">📱 5G 서비스</span>
+                    <span class="hero-tag">🍊 제주 전용 혜택</span>
+                    <span class="hero-tag">📊 판매 현황</span>
+                    <span class="hero-tag">🎯 마케팅 캠페인</span>
+                </div>
+            </div>
+            <div class="hero-hint"><span>메뉴를 선택하세요</span><span class="hint-arrow">↓</span></div>
+        </div>`;
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ════════════════════════════════════════
+   메뉴 렌더링
+════════════════════════════════════════ */
+function renderMenu() {
+    const tree=document.getElementById('menuTree');
+    if(!menuData.length){ tree.innerHTML='<div class="empty-menu">메뉴가 없습니다.<br>새 메뉴를 추가해주세요.</div>'; return; }
+    tree.innerHTML=menuData.map(item=>renderMenuItem(item,0)).join('');
+}
+
+function renderMenuItem(item,depth) {
+    const hasChildren=item.children&&item.children.length>0;
+    const depthDots=depth>0?`<span>${'<span class="depth-dot"></span>'.repeat(depth)}</span>`:'';
+    const typeBadge=item.type==='link'
+        ?`<span class="menu-type-badge badge-link">링크</span>`
+        :`<span class="menu-type-badge badge-board">게시판</span>`;
+    const childrenHtml=hasChildren
+        ?`<div class="submenu" id="sub_${item.id}">${item.children.map(c=>renderMenuItem(c,depth+1)).join('')}</div>`:'';
+    return `
+        <div class="menu-item" id="item_${item.id}">
+            <div class="menu-item-header" onclick="handleMenuClick(${item.id},${hasChildren})" id="header_${item.id}">
+                ${depthDots}
+                <span class="menu-toggle ${hasChildren?'':'invisible'}" id="toggle_${item.id}">${hasChildren?'▶':''}</span>
+                <span class="menu-icon">${item.icon}</span>
+                <span class="menu-label">${item.name}</span>
+                ${typeBadge}
+                <div class="menu-actions">
+                    <button class="menu-action-btn btn-add-child" onclick="event.stopPropagation();openAddMenuModal(${item.id})">+</button>
+                    <button class="menu-action-btn btn-edit"      onclick="event.stopPropagation();openEditMenuModal(${item.id})">✎</button>
+                    <button class="menu-action-btn btn-delete"    onclick="event.stopPropagation();deleteMenu(${item.id})">✕</button>
+                </div>
+            </div>
+            ${childrenHtml}
+        </div>`;
+}
+
+/* ════════════════════════════════════════
+   메뉴 클릭
+════════════════════════════════════════ */
+function handleMenuClick(id,hasChildren) {
+    document.querySelectorAll('.menu-item-header').forEach(h=>h.classList.remove('active'));
+    document.getElementById(`header_${id}`).classList.add('active');
+    if(hasChildren){
+        const sub=document.getElementById(`sub_${id}`),toggle=document.getElementById(`toggle_${id}`);
+        if(sub){sub.classList.toggle('open');toggle.classList.toggle('open');}
+    }
+    const item=findMenuById(id,menuData);
+    if(!item) return;
+    closeSidebar();
+    if(item.type==='link') showLinkContent(item);
+    else{ currentBoardId=id; currentPage=1; if(!boardData[id])boardData[id]=[]; showBoard(id); }
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ════════════════════════════════════════
+   링크
+════════════════════════════════════════ */
+function showLinkContent(item) {
+    document.getElementById('mainContent').innerHTML=`
+        <div class="content-wrap">
+            <div class="link-header">
+                <div class="link-header-left">
+                    <span style="font-size:18px">${item.icon}</span>
+                    <h3>${item.name}</h3>
+                    <span class="link-url-display">${item.url}</span>
+                </div>
+                <a class="link-open-btn" href="${item.url}" target="_blank">↗ 새 탭</a>
+            </div>
+            <div class="link-iframe-wrap">
+                <iframe src="${item.url}" title="${item.name}" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+            </div>
+        </div>`;
+}
+
+/* ════════════════════════════════════════
+   게시판
+════════════════════════════════════════ */
+function showBoard(menuId,page) {
+    page=page||currentPage; currentPage=page;
+    const item=findMenuById(menuId,menuData);
+    const posts=boardData[menuId]||[];
+    const notices=posts.filter(p=>p.category==='공지');
+    const normals=posts.filter(p=>p.category!=='공지').reverse();
+    const totalPages=Math.max(1,Math.ceil(normals.length/PAGE_SIZE));
+    const paged=normals.slice((page-1)*PAGE_SIZE,page*PAGE_SIZE);
+    const list=[...notices,...paged];
+
+    let rows='';
+    if(!list.length){
+        rows=`<tr><td colspan="5" style="padding:40px;text-align:center;color:#bbb;font-size:14px">등록된 게시글이 없습니다.</td></tr>`;
+    } else {
+        list.forEach(post=>{
+            const isNotice=post.category==='공지';
+            const num=isNotice?'':(normals.length-normals.indexOf(post));
+            const isNew=(Date.now()-post.createdAt)<86400000;
+            const newBadge=isNew?'<span class="post-badge badge-new-post">N</span>':'';
+            rows+=`<tr>
+                <td class="hide-mobile">${isNotice?'<span class="post-badge badge-notice-post">공지</span>':num}</td>
+                <td class="title-cell" onclick="showPostDetail(${menuId},${post.id})">
+                    ${isNotice?'<span class="post-badge badge-notice-post">공지</span>':''}
+                    ${post.category&&post.category!=='공지'?`<span style="color:#999;font-size:11px;margin-right:4px">[${post.category}]</span>`:''}
+                    ${post.title}${newBadge}
+                </td>
+                <td class="hide-mobile">${post.author}</td>
+                <td>${formatDate(post.createdAt)}</td>
+                <td class="hide-mobile">${post.views}</td>
+            </tr>`;
+        });
+    }
+
+    let pageBtns='';
+    for(let i=1;i<=totalPages;i++) pageBtns+=`<button class="page-btn ${i===page?'active':''}" onclick="showBoard(${menuId},${i})">${i}</button>`;
+
+    document.getElementById('mainContent').innerHTML=`
+        <div class="content-wrap">
+            <div class="board-top">
+                <h2>${item.icon} ${item.name}</h2>
+                <button class="board-write-btn" onclick="openPostModal(${menuId},null)">✏️ 글쓰기</button>
+            </div>
+            <div class="board-search">
+                <select id="searchType" style="flex-shrink:0">
+                    <option value="title">제목</option>
+                    <option value="content">내용</option>
+                    <option value="author">작성자</option>
+                </select>
+                <input type="text" id="searchKeyword" placeholder="검색어 입력"
+                       onkeydown="if(event.key==='Enter')searchBoard(${menuId})">
+                <button class="search-btn" onclick="searchBoard(${menuId})">검색</button>
+            </div>
+            <div class="board-table-wrap">
+                <table class="board-table">
+                    <thead><tr>
+                        <th class="hide-mobile" style="width:60px">번호</th>
+                        <th>제목</th>
+                        <th class="hide-mobile" style="width:80px">작성자</th>
+                        <th style="width:90px">작성일</th>
+                        <th class="hide-mobile" style="width:55px">조회</th>
+                    </tr></thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            </div>
+            <div class="board-pagination">${pageBtns}</div>
+        </div>`;
+}
+
+function searchBoard(menuId) {
+    const type=document.getElementById('searchType').value;
+    const keyword=document.getElementById('searchKeyword').value.trim().toLowerCase();
+    if(!keyword){showBoard(menuId,1);return;}
+    const item=findMenuById(menuId,menuData);
+    const posts=(boardData[menuId]||[]).filter(p=>{
+        if(type==='title')   return p.title.toLowerCase().includes(keyword);
+        if(type==='content') return p.content.toLowerCase().includes(keyword);
+        if(type==='author')  return p.author.toLowerCase().includes(keyword);
+        return false;
+    }).reverse();
+
+    let rows='';
+    if(!posts.length){
+        rows=`<tr><td colspan="5" style="padding:40px;text-align:center;color:#bbb;font-size:14px">검색 결과가 없습니다.</td></tr>`;
+    } else {
+        posts.forEach((post,idx)=>{
+            rows+=`<tr>
+                <td class="hide-mobile">${posts.length-idx}</td>
+                <td class="title-cell" onclick="showPostDetail(${menuId},${post.id})">
+                    ${post.category?`<span style="color:#999;font-size:11px;margin-right:4px">[${post.category}]</span>`:''}${post.title}
+                </td>
+                <td class="hide-mobile">${post.author}</td>
+                <td>${formatDate(post.createdAt)}</td>
+                <td class="hide-mobile">${post.views}</td>
+            </tr>`;
+        });
+    }
+
+    document.getElementById('mainContent').innerHTML=`
+        <div class="content-wrap">
+            <div class="board-top">
+                <h2>${item.icon} ${item.name} — 검색결과</h2>
+                <button class="board-write-btn" onclick="showBoard(${menuId},1)">← 목록</button>
+            </div>
+            <div class="board-table-wrap">
+                <table class="board-table">
+                    <thead><tr>
+                        <th class="hide-mobile" style="width:60px">번호</th><th>제목</th>
+                        <th class="hide-mobile" style="width:80px">작성자</th>
+                        <th style="width:90px">작성일</th>
+                        <th class="hide-mobile" style="width:55px">조회</th>
+                    </tr></thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            </div>
+        </div>`;
+}
+
+function showPostDetail(menuId,postId) {
+    const post=(boardData[menuId]||[]).find(p=>p.id===postId);
+    if(!post) return;
+    post.views++;
+    saveBoardDB();
+    document.getElementById('mainContent').innerHTML=`
+        <div class="content-wrap">
+            <div class="post-detail">
+                <div class="post-detail-header">
+                    <div class="post-detail-title">
+                        ${post.category?`<span style="color:#E51C23;font-size:13px;margin-right:7px">[${post.category}]</span>`:''}${post.title}
+                    </div>
+                    <div class="post-detail-meta">
+                        <span>👤 ${post.author}</span>
+                        <span>📅 ${formatDate(post.createdAt)}</span>
+                        <span>👁 ${post.views}</span>
+                    </div>
+                </div>
+                <div class="post-detail-body">${escapeHtml(post.content)}</div>
+                <div class="post-detail-footer">
+                    <button class="btn-back"        onclick="showBoard(${menuId},${currentPage})">← 목록</button>
+                    <button class="btn-post-edit"   onclick="openPostModal(${menuId},${postId})">수정</button>
+                    <button class="btn-post-delete" onclick="deletePost(${menuId},${postId})">삭제</button>
+                </div>
+            </div>
+        </div>`;
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function openPostModal(menuId,postId) {
+    currentBoardId=menuId; editingPostId=postId;
+    if(postId){
+        const post=(boardData[menuId]||[]).find(p=>p.id===postId);
+        if(!post) return;
+        document.getElementById('postModalTitle').textContent='글 수정';
+        document.getElementById('postCategory').value=post.category||'';
+        document.getElementById('postTitle').value=post.title;
+        document.getElementById('postContent').value=post.content;
+    } else {
+        document.getElementById('postModalTitle').textContent='글쓰기';
+        document.getElementById('postCategory').value='';
+        document.getElementById('postTitle').value='';
+        document.getElementById('postContent').value='';
+    }
+    document.getElementById('postModal').classList.add('active');
+}
+
+function closePostModal(){document.getElementById('postModal').classList.remove('active');}
+
+async function submitPost() {
+    const title=document.getElementById('postTitle').value.trim();
+    const content=document.getElementById('postContent').value.trim();
+    const category=document.getElementById('postCategory').value;
+    if(!title){alert('제목을 입력해주세요.');return;}
+    if(!boardData[currentBoardId])boardData[currentBoardId]=[];
+    if(editingPostId){
+        const post=boardData[currentBoardId].find(p=>p.id===editingPostId);
+        if(post){post.title=title;post.content=content;post.category=category;}
+        await saveBoardDB();
+        closePostModal(); showPostDetail(currentBoardId,editingPostId);
+        showToast('✅ 게시글이 수정되었습니다.');
+    } else {
+        boardData[currentBoardId].push({id:nextPostId++,title,content,category,author:'관리자',createdAt:Date.now(),views:0});
+        await saveBoardDB();
+        closePostModal(); showBoard(currentBoardId,1);
+        showToast('✅ 게시글이 등록되었습니다.');
+    }
+}
+
+async function deletePost(menuId,postId) {
+    if(!confirm('이 게시글을 삭제하시겠습니까?')) return;
+    boardData[menuId]=(boardData[menuId]||[]).filter(p=>p.id!==postId);
+    await saveBoardDB();
+    showBoard(menuId,1); showToast('🗑️ 게시글이 삭제되었습니다.');
+}
+
+/* ════════════════════════════════════════
+   메뉴 모달
+════════════════════════════════════════ */
+function openAddMenuModal(parentId) {
+    editingMenuId=null; selectedIcon='📄'; selectedType='board';
+    document.getElementById('modalTitle').textContent=parentId?'하위 메뉴 추가':'새 메뉴 추가';
+    document.getElementById('menuName').value='';
+    document.getElementById('menuUrl').value='';
+    updateParentSelect(parentId); applyTypeUI('board'); renderIconSelector();
+    document.getElementById('menuModal').classList.add('active');
+}
+
+function openEditMenuModal(id) {
+    const item=findMenuById(id,menuData); if(!item) return;
+    editingMenuId=id; selectedIcon=item.icon; selectedType=item.type||'board';
+    document.getElementById('modalTitle').textContent='메뉴 편집';
+    document.getElementById('menuName').value=item.name;
+    document.getElementById('menuUrl').value=item.url||'';
+    updateParentSelect(item.parentId); applyTypeUI(selectedType); renderIconSelector();
+    document.getElementById('menuModal').classList.add('active');
+}
+
+function selectType(type){selectedType=type;applyTypeUI(type);}
+
+function applyTypeUI(type){
+    document.getElementById('typeBtnBoard').className='type-btn'+(type==='board'?' selected-board':'');
+    document.getElementById('typeBtnLink').className ='type-btn'+(type==='link' ?' selected-link' :'');
+    document.getElementById('linkInputArea').className='link-input-area'+(type==='link'?' show':'');
+}
+
+function updateParentSelect(selectedParentId){
+    const select=document.getElementById('parentMenu');
+    select.innerHTML='<option value="">최상위 메뉴 (루트)</option>';
+    function addOptions(items,depth){
+        items.forEach(item=>{
+            const opt=document.createElement('option');
+            opt.value=item.id;
+            opt.textContent='\u3000'.repeat(depth)+item.icon+' '+item.name;
+            if(item.id==selectedParentId) opt.selected=true;
+            select.appendChild(opt);
+            if(item.children) addOptions(item.children,depth+1);
+        });
+    }
+    addOptions(menuData,0);
+}
+
+function renderIconSelector(){
+    let html='';
+    ICON_GROUPS.forEach(group=>{
+        html+=`<div class="icon-group-label">${group.label}</div><div class="icon-grid">`;
+        group.icons.forEach(ic=>{
+            html+=`<div class="icon-option ${ic===selectedIcon?'selected':''}" onclick="selectIcon('${ic}')">${ic}</div>`;
+        });
+        html+=`</div>`;
+    });
+    document.getElementById('iconSelector').innerHTML=html;
+}
+
+function selectIcon(icon){
+    selectedIcon=icon;
+    document.querySelectorAll('.icon-option').forEach(el=>el.classList.remove('selected'));
+    event.currentTarget.classList.add('selected');
+}
+
+function closeMenuModal(){document.getElementById('menuModal').classList.remove('active');}
+
+/* ════════════════════════════════════════
+   저장 버튼
+════════════════════════════════════════ */
+async function saveMenu(){
+    const name=document.getElementById('menuName').value.trim();
+    if(!name){alert('메뉴 이름을 입력해주세요.');return;}
+    const url=document.getElementById('menuUrl').value.trim();
+    if(selectedType==='link'&&!url){alert('연결 URL을 입력해주세요.');return;}
+    const parentId=document.getElementById('parentMenu').value;
+
+    if(!editingMenuId){
+        const newMenu={id:nextId++,name,icon:selectedIcon,type:selectedType,
+            url:selectedType==='link'?url:'',parentId:parentId?parseInt(parentId):null,children:[]};
+        if(!parentId) menuData.push(newMenu);
+        else addChildMenu(parseInt(parentId),newMenu,menuData);
+        await saveMenuDB();
+        renderMenu(); closeMenuModal(); showToast('✅ 메뉴가 추가되었습니다.');
+        return;
+    }
+
+    const original=findMenuById(editingMenuId,menuData);
+    const changes=[];
+    if(original.name!==name) changes.push({label:'이름',before:original.name,after:name});
+    if(original.icon!==selectedIcon) changes.push({label:'아이콘',before:original.icon,after:selectedIcon});
+    const origType=original.type||'board';
+    if(origType!==selectedType) changes.push({label:'타입',before:origType==='board'?'게시판':'링크',after:selectedType==='board'?'게시판':'링크'});
+    if(selectedType==='link'&&(original.url||'')!==url) changes.push({label:'URL',before:original.url||'(없음)',after:url});
+
+    if(!changes.length){showToast('ℹ️ 변경된 내용이 없습니다.');closeMenuModal();return;}
+
+    pendingSaveData={id:editingMenuId,name,icon:selectedIcon,type:selectedType,url,parentId};
+    document.getElementById('confirmDiff').innerHTML=changes.map(c=>`
+        <div class="diff-row">
+            <span class="diff-label">${c.label}</span>
+            <span class="diff-before">${c.before}</span>
+            <span class="diff-arrow">→</span>
+            <span class="diff-after">${c.after}</span>
+        </div>`).join('');
+    closeMenuModal();
+    document.getElementById('confirmModal').classList.add('active');
+}
+
+async function applyMenuSave(){
+    if(!pendingSaveData) return;
+    const{id,name,icon,type,url}=pendingSaveData;
+    updateMenuById(id,name,icon,type,url,menuData);
+    await saveMenuDB();
+    renderMenu(); closeConfirmModal(); pendingSaveData=null;
+    showToast('✅ 메뉴가 수정되었습니다.');
+}
+
+function closeConfirmModal(){document.getElementById('confirmModal').classList.remove('active');pendingSaveData=null;}
+
+/* ════════════════════════════════════════
+   CRUD 헬퍼
+════════════════════════════════════════ */
+function updateMenuById(id,name,icon,type,url,items){
+    for(const item of items){
+        if(item.id===id){item.name=name;item.icon=icon;item.type=type;item.url=type==='link'?url:'';return true;}
+        if(item.children&&updateMenuById(id,name,icon,type,url,item.children)) return true;
+    }
+    return false;
+}
+function addChildMenu(parentId,newMenu,items){
+    for(const item of items){
+        if(item.id===parentId){item.children.push(newMenu);return true;}
+        if(item.children&&addChildMenu(parentId,newMenu,item.children)) return true;
+    }
+    return false;
+}
+async function deleteMenu(id){
+    if(!confirm('이 메뉴를 삭제하시겠습니까?\n하위 메뉴도 함께 삭제됩니다.')) return;
+    menuData=removeMenuById(id,menuData);
+    await saveMenuDB();
+    renderMenu(); showToast('🗑️ 메뉴가 삭제되었습니다.');
+}
+function removeMenuById(id,items){
+    return items.filter(item=>{
+        if(item.id===id) return false;
+        if(item.children) item.children=removeMenuById(id,item.children);
+        return true;
+    });
+}
+function findMenuById(id,items){
+    for(const item of items){
+        if(item.id===id) return item;
+        if(item.children){const f=findMenuById(id,item.children);if(f)return f;}
+    }
+    return null;
+}
+function formatDate(ts){
+    const d=new Date(ts);
+    return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+}
+function escapeHtml(str){
+    return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+let toastTimer=null;
+function showToast(msg){
+    const t=document.getElementById('toast');
+    t.textContent=msg; t.classList.add('show');
+    if(toastTimer) clearTimeout(toastTimer);
+    toastTimer=setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+['menuModal','postModal','confirmModal'].forEach(id=>{
+    document.getElementById(id).addEventListener('click',e=>{
+        if(e.target===e.currentTarget) document.getElementById(id).classList.remove('active');
+    });
+});
+
+/* ════════════════════════════════════════
+   초기화
+════════════════════════════════════════ */
+(async () => {
+    if (SUPABASE_URL && SUPABASE_KEY) {
+        // 저장된 설정 있으면 바로 로드
+        document.getElementById('setupModal').classList.remove('active');
+        const ok = await loadData();
+        document.getElementById('loadingOverlay').style.display = 'none';
+        if (!ok) showToast('⚠️ DB 연결 실패 — 로컬 데이터 사용 중');
+    } else {
+        // 최초 실행: 설정 모달 표시
+        document.getElementById('loadingOverlay').style.display = 'none';
+        loadLocal();
+    }
+    renderMenu();
+})();
+</script>
+</body>
+</html>
